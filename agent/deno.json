@@ -1,0 +1,11 @@
+{
+  "tasks": {
+    "run": "deno run --allow-env --allow-net --allow-read=src/config.json --allow-write='src/log' --allow-write=/media/common/code/full_stack/un.log-collect-and-view/server/src/data/ --allow-run='journalctl,echo' --allow-sys='hostname' src/un.log-agent.js",
+    "run-as-root": "sudo /home/frida/.deno/bin/deno task run"
+  },
+  "imports": {
+    "@std/assert": "jsr:@std/assert@1",
+    "@std/json": "jsr:@std/json@^1.0.2",
+    "@std/streams": "jsr:@std/streams@^1.0.9"
+  }
+}

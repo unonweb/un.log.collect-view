@@ -1,0 +1,36 @@
+body {
+    font-family: sans-serif;
+}
+
+.log-entry {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+}
+
+.log-time {
+}
+
+.log-prio {
+}
+
+vaadin-grid {
+    height: 100vh;
+    font-size: 0.9rem;
+}
+
+vaadin-grid::part(prio-1) {
+    background-color: lightcoral;
+}
+
+vaadin-grid::part(prio-2) {
+    background-color: #ffa50061;
+}
+
+vaadin-grid::part(prio-3) {
+    background-color: #ffff006e;
+}
+
+vaadin-grid::part(prio-4) {
+    background-color: red;
+}

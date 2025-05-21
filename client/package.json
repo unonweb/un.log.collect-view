@@ -1,0 +1,30 @@
+{
+  "name": "un.log-client",
+  "version": "1.0.0",
+  "main": "index.html",
+  "scripts": {
+    "build": "rollup -c",
+    "serve:dev": "npx web-dev-server --node-resolve --root-dir src --open index.html",
+    "serve:src": "npm run serve:dev",
+    "serve:prod": "npx web-dev-server --root-dir build",
+    "serve:build": "npm run serve:prod"
+  },
+  "author": "Udo Nonner",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@vaadin/checkbox": "^24.7.6",
+    "@vaadin/grid": "^24.7.6",
+    "@vaadin/icons": "^24.7.6",
+    "@vaadin/select": "^24.7.6",
+    "@vaadin/text-field": "^24.7.6",
+    "lit": "^3.3.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@web/rollup-plugin-copy": "^0.5.1",
+    "@web/rollup-plugin-html": "^2.3.0",
+    "rollup": "^4.41.0"
+  }
+}

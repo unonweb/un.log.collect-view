@@ -1,0 +1,29 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "request": "launch",
+            "name": "Launch deno un.report",
+            "type": "node",
+            "program": "${workspaceFolder}/src/main.js",
+            "cwd": "${workspaceFolder}/src",
+            "env": {},
+            "runtimeExecutable": "/home/frida/.deno/bin/deno",
+            "runtimeArgs": [
+                "run",
+                "--inspect-brk",
+                "--allow-env",
+                "--allow-net",
+                "--allow-read=./data",
+                "--allow-read=./config.json",
+                "--allow-write=./log",
+                "--allow-run=journalctl,echo",
+                "--allow-sys=hostname"
+            ],
+            "attachSimplePort": 9229,
+        }
+    ]
+}

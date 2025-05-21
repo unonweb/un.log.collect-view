@@ -1,0 +1,30 @@
+{
+    "timeFrame": "today",
+    "sendReport": 0,
+    "log": {
+        "dir": "/media/common/code/full_stack/un.log-collect-and-view/server/src/data"
+    },
+    "mail": {
+        "dest": "example@mail.net",
+        "subject": "IT-Report"
+    },
+    "reports": {
+        "ssh": {
+            "enabled": true
+        },
+        "admin": {
+            "enabled": true
+        },
+        "errors": {
+            "enabled": true,
+            "priority": 3
+        },
+        "test": {
+            "enabled": false
+        },
+        "space": {
+            "enabled": true,
+            "threshold": 15
+        }
+    }
+}
