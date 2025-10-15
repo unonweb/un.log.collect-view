@@ -1,7 +1,11 @@
 //const envObj = Deno.env.toObject()
 //console.log(envObj)
-import { TextLineStream } from "@std/streams/text-line-stream";
-import { JsonParseStream } from "@std/json/parse-stream";
+//import { TextLineStream } from "@std/streams/text-line-stream";
+//import { JsonParseStream } from "@std/json/parse-stream";
+import reportErrors from './lib/reportErrors.js';
+import reportSSH from './lib/reportSSH.js';
+import reportSudo from './lib/reportSudo.js';
+import readAndParseJSONConfig from './lib/readAndParseJsonConfig.js';
 
 const SCRIPT_DIR = import.meta.dirname
 const CONFIG_PATH = `${SCRIPT_DIR}/config.json`
@@ -21,6 +25,9 @@ async function main() {
         const reports = []
         //report.host = hostname
         //report.time = Date.now()
+
+		// GATHER REPORTS
+		// --------------
 
         if (config.reports.ssh.enabled == true) {
             //report.ssh = await reportSSH()
@@ -57,134 +64,4 @@ function getFormattedDate() {
     return `${year}-${month}-${day}-${hours}:${minutes}`;
 }
 
-async function reportSudo(hostname) {
-    const timeFrame = 'today'
-
-    const cmd = new Deno.Command('journalctl', {
-        args: [
-            '--quiet',
-            `--since=${timeFrame}`,
-            '--identifier=sudo',
-            '--grep=COMMAND=',
-            '--output=json',
-            '--output-fields=MESSAGE,PRIORITY',
-        ],
-        stdout: 'piped',
-        stdin: 'inherit'
-    });
-
-    const { code, stdout, stderr } = await cmd.output();
-
-    if (code == 0) {
-        const logEntries = cmdOutputToJson(stdout)
-        processLogEntries(logEntries, [{ reportType: 'sudo', host: hostname }])
-        return logEntries
-    }
-    else {
-        throw new Error(new TextDecoder().decode(stderr))
-    }
-}
-
-async function reportSSH(hostname) {
-    const timeFrame = 'today'
-
-    const cmd = new Deno.Command('journalctl', {
-        args: [
-            '--quiet',
-            `--since=${timeFrame}`,
-            '--identifier=sshd',
-            '--output=json',
-            '--output-fields=MESSAGE,PRIORITY',
-        ],
-        stdout: 'piped',
-        stdin: 'inherit'
-    });
-
-    const { code, stdout, stderr } = await cmd.output();
-
-    if (code == 0) {
-        const logEntries = cmdOutputToJson(stdout)
-        processLogEntries(logEntries, [{ reportType: 'ssh', host: hostname }])
-        return logEntries
-    }
-    else {
-        throw new Error(new TextDecoder().decode(stderr))
-    }
-}
-
-async function reportErrors(priority, hostname) {
-    const timeFrame = 'today'
-    const bootID = -0
-    priority ??= 3
-
-    const cmd = new Deno.Command('journalctl', {
-        args: [
-            '--quiet',
-            `--since=${timeFrame}`,
-            `--boot=${bootID}`,
-            `--priority=${priority}`,
-            '--output=json',
-            '--output-fields=MESSAGE,PRIORITY',
-        ],
-        stdout: 'piped',
-        stdin: 'inherit'
-    });
-
-    const { code, stdout, stderr } = await cmd.output();
-
-    if (code == 0) {
-        const logEntries = cmdOutputToJson(stdout)
-        processLogEntries(logEntries, [{ reportType: 'errors', host: hostname }])
-        return logEntries
-    }
-    else {
-        throw new Error(new TextDecoder().decode(stderr))
-    }
-}
-
-function processLogEntries(logEntries, addFields = []) {
-
-    for (const logEntry of logEntries) {
-        // add fields
-        for (const field of addFields) {
-            for (const key of Object.keys(field)) {
-                logEntry[key] = field[key]
-            }
-        }
-        // rm
-        delete logEntry._BOOT_ID
-        delete logEntry.__MONOTONIC_TIMESTAMP
-        delete logEntry.__CURSOR
-    }
-}
-
-function cmdOutputToJson(output) {
-
-    let text = new TextDecoder().decode(output)
-    text = text.substring(0, text.lastIndexOf('\n')) // remove last newline
-    text = text.replaceAll('\n', ',') // replace newline with comma
-    text = `[${text}]` // wrap into array literal
-    const json = JSON.parse(text)
-    return json
-}
-
-function cmdOutputToArr(output) {
-    let text = new TextDecoder().decode(output)
-    let arr = text.split('\n')
-
-    if (arr[arr.length - 1] === '') {
-        arr.pop()
-    }
-
-    return arr
-}
-
-async function readAndParseJSONConfig(path) {
-    try {
-        const config = await Deno.readTextFile(path)
-        return JSON.parse(config)
-    } catch (error) {
-        console.error(error.stack)
-    }
-}
 main()
